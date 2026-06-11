@@ -1,6 +1,10 @@
 import OpenAI from "openai";
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || "",
+  baseURL: process.env.OPENAI_BASE_URL || undefined,
+});
+const MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
 
 export interface AnalysisResult {
   summary: string;
@@ -45,7 +49,7 @@ INSIGHT: <text>`;
 
   try {
     const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
       max_tokens: 300,
