@@ -5,8 +5,10 @@ interface WalletCardProps {
     summary: string;
     riskLevel: string;
     activityScore: number;
+    healthScore: number;
     labels: string[];
     insight: string;
+    category: string;
   } | null;
   loading: boolean;
 }
@@ -16,14 +18,25 @@ export default function WalletCard({ balance, address, analysis, loading }: Wall
     analysis?.riskLevel === "low" ? "text-green-400" :
     analysis?.riskLevel === "high" ? "text-red-400" : "text-yellow-400";
 
+  const categoryColor: Record<string, string> = {
+    trader: "bg-purple-900/30 text-purple-300",
+    investor: "bg-green-900/30 text-green-300",
+    whale: "bg-amber-900/30 text-amber-300",
+    bot: "bg-red-900/30 text-red-300",
+    "bridge-user": "bg-cyan-900/30 text-cyan-300",
+    "defi-user": "bg-blue-900/30 text-blue-300",
+    "new-wallet": "bg-gray-900/30 text-gray-300",
+    "dex-trader": "bg-orange-900/30 text-orange-300",
+  };
+
   return (
     <div className="bg-[#111] border border-gray-800 rounded-xl p-6">
       <div className="flex items-start justify-between mb-4">
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-xs text-gray-500 mb-1">Wallet</p>
-          <p className="font-mono text-sm text-gray-300">{address}</p>
+          <p className="font-mono text-sm text-gray-300 truncate">{address}</p>
         </div>
-        <div className="text-right">
+        <div className="text-right ml-4">
           <p className="text-xs text-gray-500 mb-1">Balance</p>
           <p className="text-xl font-bold text-blue-400">{parseFloat(balance).toFixed(4)} MNT</p>
         </div>
@@ -37,25 +50,26 @@ export default function WalletCard({ balance, address, analysis, loading }: Wall
         </div>
       ) : analysis ? (
         <>
-          <div className="flex gap-4 mb-4 text-sm">
+          <div className="flex flex-wrap items-center gap-3 mb-4 text-sm">
+            <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${categoryColor[analysis.category] || "bg-gray-900/30 text-gray-300 border-gray-800/50"}`}>
+              {analysis.category?.replace("-", " ").toUpperCase() || "WALLET"}
+            </span>
             <span className={riskColor}>Risk: {analysis.riskLevel.toUpperCase()}</span>
             <span className="text-blue-400">Score: {analysis.activityScore}/100</span>
+            <span className="text-green-400">Health: {analysis.healthScore}/100</span>
           </div>
 
           <p className="text-gray-300 text-sm mb-3">{analysis.summary}</p>
 
-          <div className="flex flex-wrap gap-2 mb-4">
-            {analysis.labels.map((label, i) => (
-              <span key={i} className="px-2 py-1 bg-blue-900/30 text-blue-300 text-xs rounded-full border border-blue-800/50">
-                {label}
-              </span>
-            ))}
-          </div>
-
-          <div className="bg-blue-900/20 border border-blue-800/30 rounded-lg p-3">
-            <p className="text-xs text-blue-400 mb-1">Insight</p>
-            <p className="text-sm text-gray-300">{analysis.insight}</p>
-          </div>
+          {analysis.labels.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {analysis.labels.map((label, i) => (
+                <span key={i} className="px-2 py-1 bg-blue-900/30 text-blue-300 text-xs rounded-full border border-blue-800/50">
+                  {label}
+                </span>
+              ))}
+            </div>
+          )}
         </>
       ) : null}
     </div>

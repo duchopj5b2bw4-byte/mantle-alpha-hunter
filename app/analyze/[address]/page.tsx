@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import WalletCard from "@/components/WalletCard";
 import TxTable from "@/components/TxTable";
 import ShareCard from "@/components/ShareCard";
+import AnalysisDashboard from "@/components/AnalysisDashboard";
 import { isValidAddress } from "@/lib/utils";
 
 export default function AnalyzePage({ params }: { params: Promise<{ address: string }> }) {
@@ -52,6 +53,10 @@ export default function AnalyzePage({ params }: { params: Promise<{ address: str
         analysis={data?.analysis || null}
         loading={loading}
       />
+
+      {data?.analysis && (
+        <AnalysisDashboard analysis={data.analysis} />
+      )}
 
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Recent Transactions</h2>

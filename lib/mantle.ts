@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-const RPC = process.env.MANTLE_RPC || "https://rpc.testnet.mantle.xyz";
+const RPC = process.env.MANTLE_RPC || "https://rpc.sepolia.mantle.xyz";
 
 export function getProvider() {
   return new ethers.JsonRpcProvider(RPC);
