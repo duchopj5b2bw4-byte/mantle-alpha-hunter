@@ -2,30 +2,37 @@
 
 ## Setup
 - Open `https://mantle-alpha-hunter.vercel.app`
-- Show clean landing page with mantra: "On-chain intelligence powered by AI"
+- Show landing page: title, tagline, example wallet buttons
 
 ## Part 1: Wallet Analysis (60s)
-- Paste a known Mantle address into the search bar
-- Click "Analyze"
+- Click "Our Agent" sample wallet button (or paste any address)
 - Show loading state → results appear
-- Highlight: balance display, risk level, activity score, AI-generated summary
-- Point out smart labels (whale, trader, etc.)
+- **New:** Point out the health score gauge (green/yellow/red ring)
+- **New:** Show Key Metrics panel (total in/out, tx count, counterparties)
+- Highlight: risk level, activity score, AI summary
+- Show smart labels and wallet category
 
-## Part 2: Transaction Explorer (45s)
+## Part 2: Anomaly Detection (30s)
+- Scroll to Anomaly Detection section (if any flags shown)
+- Explain: AI detects unusual patterns automatically
+- If no flags: "This wallet looks clean — no anomalies detected"
+
+## Part 3: Transaction Explorer (30s)
 - Scroll to recent transactions table
-- Show IN/OUT coloring, value amounts, timestamps
-- Explain: data fetched live from Mantle testnet RPC
+- Show IN/OUT coloring, value amounts
+- Data fetched live from Mantle testnet RPC
 
-## Part 3: The AI Insight (45s)
-- Read the "Insight" box — AI-generated actionable recommendation
-- Show Share button → click → opens X with pre-filled analysis report
+## Part 4: The AI Insight (30s)
+- Show the "AI Insight" section at bottom
+- Read the actionable recommendation
+- Click "Share on X" → opens X with pre-filled report
 
-## Part 4: Leaderboard (30s)
-- Navigate to /leaderboard
-- Show top wallets ranked by AI activity score
-- Click one → back to its analysis page
+## Part 5: Leaderboard (20s)
+- Click Leaderboard in nav
+- Switch sort between Activity / Health
+- Click one wallet → back to its analysis
 
-## Closing (20s)
-- "Mantle Alpha Hunter makes on-chain intelligence accessible to everyone"
-- "AI + blockchain data = actionable insights"
-- Links: GitHub, live demo
+## Closing (10s)
+- "Mantle Alpha Hunter — on-chain intelligence powered by AI"
+- GitHub: https://github.com/duchopj5b2bw4-byte/mantle-alpha-hunter
+- Contract: 0x538f...c981 on Mantle Sepolia

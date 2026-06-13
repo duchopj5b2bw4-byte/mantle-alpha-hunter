@@ -1,4 +1,5 @@
 import WalletSearch from "@/components/WalletSearch";
+import SampleWallets from "@/components/SampleWallets";
 
 export default function Home() {
   return (
@@ -23,7 +24,11 @@ export default function Home() {
 
       <WalletSearch />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-16 w-full max-w-4xl">
+      <div className="mt-4">
+        <SampleWallets />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 w-full max-w-4xl">
         <div className="bg-[#111] border border-gray-800 rounded-xl p-5 text-left hover:border-blue-800/50 transition group">
           <div className="w-10 h-10 rounded-lg bg-blue-900/30 flex items-center justify-center mb-3 group-hover:bg-blue-900/50 transition">
             <span className="text-lg">🤖</span>
