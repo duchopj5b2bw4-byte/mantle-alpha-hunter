@@ -35,7 +35,7 @@ export default function Home() {
           </div>
           <h3 className="font-medium text-sm mb-1">AI Evaluation</h3>
           <p className="text-xs text-gray-500 leading-relaxed">
-            Activity scoring, risk assessment, anomaly detection, and wallet health index powered by GPT-5.4
+            Activity scoring, risk assessment, anomaly detection, and wallet health index powered by AI
           </p>
         </div>
         <div className="bg-[#111] border border-gray-800 rounded-xl p-5 text-left hover:border-blue-800/50 transition group">
@@ -59,11 +59,11 @@ export default function Home() {
       </div>
 
       <div className="flex gap-8 mt-12 text-xs text-gray-600">
-        <span>AI-powered by gpt-5.4-mini</span>
+        <span>AI-powered analysis</span>
         <span>·</span>
         <span>Mantle Sepolia Testnet</span>
         <span>·</span>
-        <span>Contract: 0x538f...c981</span>
+        <span>Contract: 0xc86B...3673</span>
       </div>
     </div>
   );

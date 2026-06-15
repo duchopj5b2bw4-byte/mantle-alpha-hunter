@@ -2,9 +2,9 @@
 import { useRouter } from "next/navigation";
 
 const SAMPLES = [
-  { addr: "0x88d2037c99572cB86a87e7636485aA42c9a47F42", label: "Our Agent" },
-  { addr: "0x388c818ca8b9251b393131c08a736a67ccb19297", label: "Active Trader" },
-  { addr: "0x742d35cc6634c0532925a3b844bc454e4438f44e", label: "Sample Wallet" },
+  { addr: "0x88d2037c99572cB86a87e7636485aA42c9a47F42", label: "Deploy Wallet" },
+  { addr: "0x388c818ca8b9251b393131c08a736a67ccb19297", label: "Test Wallet" },
+  { addr: "0x742d35cc6634c0532925a3b844bc454e4438f44e", label: "Test Wallet 2" },
 ];
 
 export default function SampleWallets() {

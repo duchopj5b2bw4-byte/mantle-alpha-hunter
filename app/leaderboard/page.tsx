@@ -13,39 +13,90 @@ interface LeaderEntry {
 }
 
 const SEED_WALLETS = [
-  "0x88d2037c99572cB86a87e7636485aA42c9a47F42",
-  "0x4490cdd5d201783db2199f950f845ceb78c022ae",
-  "0x388c818ca8b9251b393131c08a736a67ccb19297",
-  "0x742d35cc6634c0532925a3b844bc454e4438f44e",
-  "0x1cb83ac57a3c6d5a2c4e3a7a8b9c0d1e2f3a4b5c",
+  "0x722550bb8ec6416522afe9eaf446f0de3262f701",
+  "0x323480F8C030E37167edC2e96238000853011E74",
+  "0x17047d782b4de0e936c01ca9635a91f09ece2ee5",
+  "0x3eB081ea4eC0cFb5d16d610d1eb295e12Cb633a8",
+  "0x950546a7b3fd2f4c12ee83cd0e49427d5ebff609",
 ];
 
+const DEMO_LEADERS: LeaderEntry[] = [
+  {
+    address: "0x17047d782b4de0e936c01ca9635a91f09ece2ee5",
+    score: 100,
+    health: 100,
+    risk: "low",
+    label: "active",
+    category: "trader",
+  },
+  {
+    address: "0x323480F8C030E37167edC2e96238000853011E74",
+    score: 100,
+    health: 87,
+    risk: "low",
+    label: "active",
+    category: "trader",
+  },
+  {
+    address: "0x722550bb8ec6416522afe9eaf446f0de3262f701",
+    score: 93,
+    health: 82,
+    risk: "low",
+    label: "active",
+    category: "defi-user",
+  },
+  {
+    address: "0x3eB081ea4eC0cFb5d16d610d1eb295e12Cb633a8",
+    score: 88,
+    health: 77,
+    risk: "low",
+    label: "active",
+    category: "defi-user",
+  },
+  {
+    address: "0x950546a7b3fd2f4c12ee83cd0e49427d5ebff609",
+    score: 17,
+    health: 21,
+    risk: "high",
+    label: "inactive",
+    category: "new-wallet",
+  },
+];
+
+const USE_DEMO_LEADERBOARD = process.env.NEXT_PUBLIC_DEMO_LEADERBOARD !== "false";
+
 export default function LeaderboardPage() {
-  const [leaders, setLeaders] = useState<LeaderEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [leaders, setLeaders] = useState<LeaderEntry[]>(DEMO_LEADERS);
+  const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState<"score" | "health">("score");
 
   useEffect(() => {
+    if (USE_DEMO_LEADERBOARD) return;
+
     const fetchAll = async () => {
+      const responses = await Promise.all(
+        SEED_WALLETS.map(addr =>
+          fetch(`/api/analyze?address=${addr}`).then(r => r.json().catch(() => null)).catch(() => null)
+        )
+      );
       const results: LeaderEntry[] = [];
-      for (const addr of SEED_WALLETS) {
-        try {
-          const res = await fetch(`/api/analyze?address=${addr}`);
-          const json = await res.json();
-          if (json.analysis) {
-            results.push({
-              address: addr,
-              score: json.analysis.activityScore,
-              health: json.analysis.healthScore || json.analysis.activityScore,
-              risk: json.analysis.riskLevel,
-              label: (json.analysis.labels || ["unknown"])[0],
-              category: json.analysis.category || "unknown",
-            });
-          }
-        } catch {}
+      for (let i = 0; i < SEED_WALLETS.length; i++) {
+        const json = responses[i];
+        if (json?.analysis) {
+          results.push({
+            address: SEED_WALLETS[i],
+            score: json.analysis.activityScore,
+            health: json.analysis.healthScore || json.analysis.activityScore,
+            risk: json.analysis.riskLevel,
+            label: (json.analysis.labels || ["unknown"])[0],
+            category: json.analysis.category || "unknown",
+          });
+        }
       }
-      results.sort((a, b) => b.score - a.score);
-      setLeaders(results);
+      if (results.length > 0) {
+        results.sort((a, b) => b.score - a.score);
+        setLeaders(results);
+      }
       setLoading(false);
     };
     fetchAll();

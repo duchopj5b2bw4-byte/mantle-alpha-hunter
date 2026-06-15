@@ -17,41 +17,64 @@ export interface TxInfo {
 
 export async function getWalletTransactions(address: string, limit = 20): Promise<TxInfo[]> {
   const provider = getProvider();
-  const history: TxInfo[] = [];
   const addr = address.toLowerCase();
-  let blockNumber = await provider.getBlockNumber();
+  try {
+    const [currentBlock, txCount] = await Promise.all([
+      provider.getBlockNumber(),
+      provider.getTransactionCount(address),
+    ]);
 
-  for (let i = 0; i < 100 && history.length < limit; i++) {
-    try {
-      const block = await provider.getBlock(blockNumber - i);
-      if (!block) continue;
+    if (txCount === 0) return [];
 
-      const txs = block.transactions;
-      for (const txHash of txs) {
-        try {
-          const tx = await provider.getTransaction(txHash);
-          if (!tx) continue;
-          if (tx.from.toLowerCase() !== addr && (!tx.to || tx.to.toLowerCase() !== addr)) continue;
+    const depth = Math.min(30, currentBlock);
 
-          const receipt = await provider.getTransactionReceipt(txHash);
-          history.push({
-            hash: tx.hash,
-            from: tx.from,
-            to: tx.to,
-            value: ethers.formatEther(tx.value),
-            timestamp: block.timestamp,
-            gasUsed: receipt?.gasUsed.toString() || "0",
-          });
-          if (history.length >= limit) break;
-        } catch {
-          continue;
+    // Get recent block numbers
+    const blockNums = Array.from({ length: depth }, (_, i) => currentBlock - i);
+
+    // Collect all tx hashes from recent blocks
+    const blocks = await Promise.all(
+      blockNums.map(n => provider.getBlock(n).catch(() => null))
+    );
+
+    const allHashes = new Set<string>();
+    for (const block of blocks) {
+      if (block?.transactions) {
+        for (const hash of block.transactions as string[]) {
+          allHashes.add(hash);
         }
       }
-    } catch {
-      continue;
     }
+
+    // Fetch all recent transactions in parallel
+    const txs = await Promise.all(
+      [...allHashes].map(hash => provider.getTransaction(hash).catch(() => null))
+    );
+
+    // Filter matching our address
+    const matched = txs.filter(tx =>
+      tx && (tx.from?.toLowerCase() === addr || tx.to?.toLowerCase() === addr)
+    ).slice(0, limit) as ethers.TransactionResponse[];
+
+    if (matched.length === 0) return [];
+
+    // Get receipts for gasUsed
+    const receipts = await Promise.all(
+      matched.map(tx =>
+        provider.getTransactionReceipt(tx.hash).catch(() => null)
+      )
+    );
+
+    return matched.map((tx, i) => ({
+      hash: tx.hash,
+      from: tx.from,
+      to: tx.to || null,
+      value: ethers.formatEther(tx.value),
+      timestamp: (blocks.find(b => b?.number === tx.blockNumber)?.timestamp) || Math.floor(Date.now() / 1000),
+      gasUsed: receipts[i]?.gasUsed.toString() || '0',
+    }));
+  } catch {
+    return [];
   }
-  return history;
 }
 
 export async function getBalance(address: string): Promise<string> {

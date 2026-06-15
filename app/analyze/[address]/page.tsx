@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import WalletCard from "@/components/WalletCard";
 import TxTable from "@/components/TxTable";
 import ShareCard from "@/components/ShareCard";
@@ -8,12 +8,14 @@ import AnalysisDashboard from "@/components/AnalysisDashboard";
 import { isValidAddress } from "@/lib/utils";
 
 export default function AnalyzePage({ params }: { params: Promise<{ address: string }> }) {
-  const { address } = use(params);
+  const [address, setAddress] = useState<string>("");
+  useEffect(() => { (async () => { setAddress((await params).address); })(); }, [params]);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!address) return;
     if (!isValidAddress(address)) {
       setError("Invalid Mantle wallet address");
       setLoading(false);
@@ -65,7 +67,12 @@ export default function AnalyzePage({ params }: { params: Promise<{ address: str
             address={address}
             summary={data.analysis.summary}
             activityScore={data.analysis.activityScore}
+            healthScore={data.analysis.healthScore}
+            riskLevel={data.analysis.riskLevel}
+            category={data.analysis.category}
             labels={data.analysis.labels}
+            metrics={data.analysis.metrics}
+            balance={data.balance}
           />
         )}
       </div>

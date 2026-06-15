@@ -1,38 +1,24 @@
-# Mantle Alpha Hunter — Demo Script (3 min)
+# Mantle Alpha Hunter — Demo Script (90s)
 
-## Setup
-- Open `https://mantle-alpha-hunter.vercel.app`
-- Show landing page: title, tagline, example wallet buttons
+## 0:00 – Landing (10s)
+- 打开 `mantle-alpha-hunter.vercel.app`
+- 标题 + 示例钱包按钮
 
-## Part 1: Wallet Analysis (60s)
-- Click "Our Agent" sample wallet button (or paste any address)
-- Show loading state → results appear
-- **New:** Point out the health score gauge (green/yellow/red ring)
-- **New:** Show Key Metrics panel (total in/out, tx count, counterparties)
-- Highlight: risk level, activity score, AI summary
-- Show smart labels and wallet category
+## 0:10 – AI Analysis (40s)
+- 点击 "Our Agent" 示例
+- 解说：AI 分析钱包行为、健康评分、风险等级
+- 展示：健康环形图、活动进度条、风险等级
+- 展示：行为分类（New Wallet / Trader / Whale 等）+ 智能标签
+- 展示：AI Insight（可操作建议）
 
-## Part 2: Anomaly Detection (30s)
-- Scroll to Anomaly Detection section (if any flags shown)
-- Explain: AI detects unusual patterns automatically
-- If no flags: "This wallet looks clean — no anomalies detected"
+## 0:50 – On-chain Metrics (15s)
+- 展示 Key Metrics：总流入/出、交易数、对手方数
+- "数据实时从 Mantle RPC 拉取"
 
-## Part 3: Transaction Explorer (30s)
-- Scroll to recent transactions table
-- Show IN/OUT coloring, value amounts
-- Data fetched live from Mantle testnet RPC
+## 1:05 – Share & Leaderboard (15s)
+- 点击 "Share on X" → 弹出预填报告
+- 切换到 Leaderboard → 展示排序切换
 
-## Part 4: The AI Insight (30s)
-- Show the "AI Insight" section at bottom
-- Read the actionable recommendation
-- Click "Share on X" → opens X with pre-filled report
-
-## Part 5: Leaderboard (20s)
-- Click Leaderboard in nav
-- Switch sort between Activity / Health
-- Click one wallet → back to its analysis
-
-## Closing (10s)
-- "Mantle Alpha Hunter — on-chain intelligence powered by AI"
-- GitHub: https://github.com/duchopj5b2bw4-byte/mantle-alpha-hunter
-- Contract: 0x538f...c981 on Mantle Sepolia
+## 1:20 – Closing (10s)
+- "On-chain intelligence powered by AI"
+- GitHub + Contract 地址展示

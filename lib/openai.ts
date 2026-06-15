@@ -4,7 +4,7 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
   baseURL: process.env.OPENAI_BASE_URL || undefined,
 });
-const MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
+const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
 export interface AnalysisResult {
   summary: string;
@@ -29,7 +29,8 @@ export async function analyzeWallet(
   address: string,
   balance: string,
   txCount: number,
-  transactions: { hash: string; from: string; to: string | null; value: string; timestamp: number; gasUsed?: string }[]
+  transactions: { hash: string; from: string; to: string | null; value: string; timestamp: number; gasUsed?: string }[],
+  totalTxCount = txCount
 ): Promise<AnalysisResult> {
   const recent = transactions.slice(0, 15);
   const txLines = recent.map((tx) =>
@@ -84,16 +85,17 @@ Output JSON with exactly these fields:
     });
 
     const text = response.choices[0]?.message?.content || "";
-    return parseAnalysis(text, totalIn, totalOut, txCount, counterparties.size, totalAvg, hourLabel);
+    return parseAnalysis(text, totalIn, totalOut, txCount, counterparties.size, totalAvg, hourLabel, balance, totalTxCount);
   } catch (err) {
     console.error("OpenAI error:", err);
-    return fallbackAnalysis(totalIn, totalOut, txCount, counterparties.size, totalAvg, hourLabel);
+    return fallbackAnalysis(totalIn, totalOut, txCount, counterparties.size, totalAvg, hourLabel, balance, totalTxCount);
   }
 }
 
 function parseAnalysis(
   text: string,
-  totalIn: number, totalOut: number, txCount: number, uniqueCps: number, avgVal: number, peak: string
+  totalIn: number, totalOut: number, txCount: number, uniqueCps: number, avgVal: number, peak: string,
+  balance = "0", totalTxCount = txCount
 ): AnalysisResult {
   try {
     const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
@@ -117,24 +119,32 @@ function parseAnalysis(
       },
     };
   } catch {
-    return fallbackAnalysis(totalIn, totalOut, txCount, uniqueCps, avgVal, peak);
+    return fallbackAnalysis(totalIn, totalOut, txCount, uniqueCps, avgVal, peak, balance, totalTxCount);
   }
 }
 
 function fallbackAnalysis(
-  totalIn: number, totalOut: number, txCount: number, uniqueCps: number, avgVal: number, peak: string
+  totalIn: number, totalOut: number, txCount: number, uniqueCps: number, avgVal: number, peak: string,
+  balance = "0", totalTxCount = txCount
 ): AnalysisResult {
+  const bal = Math.min(5, parseFloat(balance));
   const risk = totalOut > 10 ? "high" : totalIn + totalOut > 1 ? "medium" : "low";
-  const score = Math.min(100, Math.max(1, Math.round(txCount * 5 + uniqueCps * 3)));
+  const logTx = Math.log2(totalTxCount + 1);
+  const score = Math.min(100, Math.max(1,
+    Math.round(logTx * 6 + bal * 3 + txCount * 1 + uniqueCps * 1)
+  ));
+  const health = Math.min(100, Math.max(1,
+    Math.round(logTx * 4 + bal * 4 + (totalOut > 10 ? -20 : totalIn + totalOut > 1 ? -5 : 10))
+  ));
   return {
     summary: "Wallet data retrieved. Detailed AI analysis temporarily unavailable.",
     riskLevel: risk,
     activityScore: score,
-    healthScore: Math.round(score * 0.8),
-    labels: txCount > 10 ? ["active"] : ["inactive"],
+    healthScore: health,
+    labels: totalTxCount > 1000 ? ["active"] : parseFloat(balance) > 0.1 ? ["funded"] : ["inactive"],
     insight: "Connect to Mantle testnet to explore this wallet's transaction history.",
     anomalyFlags: [],
-    category: txCount > 50 ? "trader" : txCount > 10 ? "defi-user" : "new-wallet",
+    category: totalTxCount > 10000 ? "trader" : totalTxCount > 500 ? "defi-user" : parseFloat(balance) > 0.1 ? "holder" : "new-wallet",
     metrics: {
       totalIn: totalIn.toFixed(4),
       totalOut: totalOut.toFixed(4),
